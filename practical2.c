@@ -23,9 +23,22 @@ void print_arr(int *arr, int len) {
 
 int main(int argc, char **argv) {
   int *read = file_to_1D_array("example.txt");
-  matrix *mat = create_matrix("example.txt", 3, 5);
+
+  matrix *mat1 = create_matrix("example.txt", 3, 5);
+  matrix *mat2 = create_matrix("example.txt", 5, 3);
+
+  matrix *sum = matrix_addition(mat1, mat1);
+  matrix *mult = matrix_multiplication(mat1, mat2);
+
   print_arr(read, 15);
-  print_matrix(mat);
+  printf("mat1:\n");
+  print_matrix(mat1);
+  printf("mat2:\n");
+  print_matrix(mat2);
+  printf("sum:\n");
+  print_matrix(sum);
+  printf("mult:\n");
+  print_matrix(mult);
   return 0;
 }
 
@@ -90,4 +103,39 @@ matrix *create_matrix(char *filename, int nrows, int ncols) {
     }
   }
   return mat;
+}
+
+matrix *matrix_addition(matrix *a, matrix *b) {
+  int nrows = a->nrows;
+  int ncols = a->ncols;
+  matrix *res = create_empty_matrix(nrows, ncols);
+  int r, c, a_val, b_val;
+  for (r = 0; r < nrows; ++r) {
+    for (c = 0; c < ncols; ++c) {
+      a_val = get_value(a, r, c);
+      b_val = get_value(b, r, c);
+      set_value(res, r, c, a_val + b_val);
+    }
+  }
+  return res;
+}
+
+matrix *matrix_multiplication(matrix *a, matrix *b) {
+  int nrows = a->nrows;
+  int ncols = b->ncols;
+  int nvals = a->ncols;
+  matrix *res = create_empty_matrix(nrows, ncols);
+  int r, c, i, a_val, b_val, val;
+  for (r = 0; r < nrows; ++r) {
+    for (c = 0; c < ncols; ++c) {
+      val = 0;
+      for (i = 0; i < nvals; ++i) {
+        a_val = get_value(a, r, i);
+        b_val = get_value(b, i, c);
+        val = val + (a_val * b_val);
+      }
+      set_value(res, r, c, val);
+    }
+  }
+  return res;
 }
