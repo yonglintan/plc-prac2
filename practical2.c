@@ -65,11 +65,11 @@ int **create_two_d_array(int nrows, int ncols) {
 }
 
 matrix *create_empty_matrix(int nrows, int ncols) {
-  static matrix m;
-  m.matrix = create_two_d_array(nrows, ncols);
-  m.nrows = nrows;
-  m.ncols = ncols;
-  return &m;
+  matrix *m = (matrix *)malloc(sizeof(matrix));
+  m->matrix = create_two_d_array(nrows, ncols);
+  m->nrows = nrows;
+  m->ncols = ncols;
+  return m;
 }
 
 int get_value(matrix *m, int rownum, int column) {
