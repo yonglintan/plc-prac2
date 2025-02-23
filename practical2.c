@@ -2,13 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char **argv) {
-  int i;
-  int *read = file_to_1D_array("example.txt");
-  for (i = 0; i < 15; i++) {
-    printf("%d: %d \n", i, read[i]);
+/* Util functions, remove after use */
+void print_matrix(matrix *m) {
+  int r, c;
+  for (r = 0; r < m->nrows; ++r) {
+    for (c = 0; c < m->ncols; ++c) {
+      printf("[%d] ", get_value(m, r, c));
+    }
+    printf("\n");
   }
-  printf("\n");
+}
+
+void print_arr(int *arr, int len) {
+  int i;
+  for (i = 0; i < len; ++i) {
+    printf("%d: %d%s", i, arr[i], i == len - 1 ? "\n" : ", ");
+  }
+}
+/* Util functions, remove after use */
+
+int main(int argc, char **argv) {
+  int *read = file_to_1D_array("example.txt");
+  matrix *mat = create_matrix("example.txt", 3, 5);
+  print_arr(read, 15);
+  print_matrix(mat);
   return 0;
 }
 
@@ -53,4 +70,24 @@ matrix *create_empty_matrix(int nrows, int ncols) {
   m.nrows = nrows;
   m.ncols = ncols;
   return &m;
+}
+
+int get_value(matrix *m, int rownum, int column) {
+  return m->matrix[rownum][column];
+}
+
+void set_value(matrix *m, int rownum, int column, int val) {
+  m->matrix[rownum][column] = val;
+}
+
+matrix *create_matrix(char *filename, int nrows, int ncols) {
+  int *arr = file_to_1D_array(filename);
+  matrix *mat = create_empty_matrix(nrows, ncols);
+  int r, c;
+  for (r = 0; r < nrows; ++r) {
+    for (c = 0; c < ncols; ++c) {
+      set_value(mat, r, c, arr[(r * ncols) + c]);
+    }
+  }
+  return mat;
 }
