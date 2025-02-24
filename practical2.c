@@ -3,16 +3,6 @@
 #include <stdlib.h>
 
 /* Util functions, remove after use */
-void print_matrix(matrix *m) {
-  int r, c;
-  for (r = 0; r < m->nrows; ++r) {
-    for (c = 0; c < m->ncols; ++c) {
-      printf("[%d] ", get_value(m, r, c));
-    }
-    printf("\n");
-  }
-}
-
 void print_arr(int *arr, int len) {
   int i;
   for (i = 0; i < len; ++i) {
@@ -32,24 +22,20 @@ int main(int argc, char **argv) {
 
   char *mat1_rep;
   char *mat2_rep;
+  char *sum_rep;
+  char *mult_rep;
 
   print_arr(read, 15);
 
-  /*
-    printf("mat1:\n");
-    print_matrix(mat1);
-    printf("mat2:\n");
-    print_matrix(mat2);
-    printf("sum:\n");
-    print_matrix(sum);
-    printf("mult:\n");
-    print_matrix(mult);
-  */
-
   mat1_rep = represent_matrix(mat1);
+  printf("%s\n\n", mat1_rep);
   mat2_rep = represent_matrix(mat2);
-  printf("%s\n", mat1_rep);
-  printf("%s\n", mat2_rep);
+  printf("%s\n\n", mat2_rep);
+
+  sum_rep = represent_matrix(sum);
+  printf("%s\n\n", sum_rep);
+  mult_rep = represent_matrix(mult);
+  printf("%s\n", mult_rep);
 
   free_matrix(mat1);
   free_matrix(mat2);
@@ -57,6 +43,8 @@ int main(int argc, char **argv) {
   free_matrix(mult);
   free(mat1_rep);
   free(mat2_rep);
+  free(sum_rep);
+  free(mult_rep);
 
   return 0;
 }
