@@ -30,15 +30,34 @@ int main(int argc, char **argv) {
   matrix *sum = matrix_addition(mat1, mat1);
   matrix *mult = matrix_multiplication(mat1, mat2);
 
+  char *mat1_rep;
+  char *mat2_rep;
+
   print_arr(read, 15);
-  printf("mat1:\n");
-  print_matrix(mat1);
-  printf("mat2:\n");
-  print_matrix(mat2);
-  printf("sum:\n");
-  print_matrix(sum);
-  printf("mult:\n");
-  print_matrix(mult);
+
+  /*
+    printf("mat1:\n");
+    print_matrix(mat1);
+    printf("mat2:\n");
+    print_matrix(mat2);
+    printf("sum:\n");
+    print_matrix(sum);
+    printf("mult:\n");
+    print_matrix(mult);
+  */
+
+  mat1_rep = represent_matrix(mat1);
+  mat2_rep = represent_matrix(mat2);
+  printf("%s\n", mat1_rep);
+  printf("%s\n", mat2_rep);
+
+  free_matrix(mat1);
+  free_matrix(mat2);
+  free_matrix(sum);
+  free_matrix(mult);
+  free(mat1_rep);
+  free(mat2_rep);
+
   return 0;
 }
 
@@ -138,4 +157,78 @@ matrix *matrix_multiplication(matrix *a, matrix *b) {
     }
   }
   return res;
+}
+
+void free_two_d_array(int **array, int nrows, int ncols) {
+  int i;
+  for (i = 0; i < nrows; ++i) {
+    free(array[i]);
+  }
+  free(array);
+}
+
+void free_matrix(matrix *m) {
+  free_two_d_array(m->matrix, m->nrows, m->ncols);
+  free(m);
+}
+
+int repr_size(int num) {
+  int s = 1;
+  if (num < 0) {
+    s += 1;
+    num = -num;
+  }
+  while (num > 9) {
+    num /= 10;
+    ++s;
+  }
+  return s;
+}
+
+char *inttostr(int num) {
+  int sz = repr_size(num);
+  int i = sz - 1;
+  char *str = malloc(sz * sizeof(char) + 1);
+  str[sz] = '\0';
+  if (num < 0) {
+    str[0] = '-';
+    num = -num;
+  }
+  do {
+    str[i] = (num % 10) + '0';
+    num /= 10;
+    --i;
+  } while (num);
+  return str;
+}
+
+char *represent_matrix(matrix *m) {
+  int buf_size = 0;
+  int r, c;
+  int pos = 0;
+  char *val_str;
+  char *repr;
+  for (r = 0; r < m->nrows; ++r) {
+    /* 5 chars per row ("[ " at start and " ]" at end, plus '\n' if not last row
+     * or '\0' for last row) */
+    buf_size += 5;
+    for (c = 0; c < m->ncols; ++c) {
+      buf_size += repr_size(get_value(m, r, c));
+      /* Additional 2 chars per value except last val in row (", ") */
+      buf_size += c == m->ncols ? 0 : 2;
+    }
+  }
+  repr = malloc(buf_size * sizeof(char));
+  for (r = 0; r < m->nrows; ++r) {
+    pos += snprintf(repr + pos, buf_size - pos, "[ ");
+    for (c = 0; c < m->ncols; ++c) {
+      val_str = inttostr(get_value(m, r, c));
+      pos += snprintf(repr + pos, buf_size - pos, "%s%s", val_str,
+                      c == m->ncols - 1 ? "" : ", ");
+      free(val_str);
+    }
+    pos += snprintf(repr + pos, buf_size - pos, " ]%c",
+                    r == m->nrows - 1 ? '\0' : '\n');
+  }
+  return repr;
 }
